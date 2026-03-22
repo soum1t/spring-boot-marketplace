@@ -3,11 +3,13 @@ package com.example.backend.config;
 import com.example.backend.entities.User;
 import com.example.backend.repositories.UserRepository;
 import com.example.backend.utils.JWTUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -15,12 +17,14 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.util.Arrays;
 import java.util.Optional;
 
+@Slf4j
 @Configuration
 public class SecurityConfig {
 
@@ -73,6 +77,18 @@ public class SecurityConfig {
                     .anyRequest().authenticated())
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .oauth2Login(oauth2 -> oauth2
+                        .successHandler(
+                                (req, res, auth) -> {
+                                    OidcUser oidcUser = (OidcUser) auth.getPrincipal();
+                                    assert oidcUser != null;
+                                    log.info("Oauth2 login successfull, name: {}, email: {}", oidcUser.getClaims().get("name"), oidcUser.getClaims().get("email"));
+                                })
+                        .failureHandler(
+                                (req, res, exp) -> {
+                                    log.error("OAuth2 login failed: {}", exp.getMessage());
+                                })
+                )
                 .csrf(AbstractHttpConfigurer::disable)
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 

@@ -1,5 +1,6 @@
 package com.example.backend.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -19,5 +20,10 @@ public class Product {
     private String name;
     private String description;
     private Double price;
+
+    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
 }

@@ -64,4 +64,8 @@ public class UserService {
         loginUserResponse.setToken(jwtUtil.generateToken(authentication1.getName()));
         return loginUserResponse;
     }
+
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email).orElse(null);
+    }
 }

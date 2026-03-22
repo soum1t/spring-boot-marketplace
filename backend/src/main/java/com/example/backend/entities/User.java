@@ -6,6 +6,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -23,6 +24,9 @@ public class User {
     private String name;
     private String email;
     private String password;
+
+    @OneToMany(mappedBy = "user")
+    private Set<Product> products;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
