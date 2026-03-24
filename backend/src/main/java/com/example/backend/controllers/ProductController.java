@@ -6,10 +6,12 @@ import com.example.backend.entities.Product;
 import com.example.backend.service.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Set;
 
@@ -20,10 +22,13 @@ public class ProductController {
 
     private final ProductService productService;
 
-    @PostMapping("create")
-    public ResponseEntity<CreateProductResponse> create(@RequestBody @Valid CreateProductRequest req) {
+    @PostMapping(value = "create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<CreateProductResponse> create(
+            @RequestPart("data") @Valid CreateProductRequest req,
+            @RequestPart("file") MultipartFile file
+    ) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return ResponseEntity.ok(productService.create(req, authentication.getName()));
+        return ResponseEntity.ok(productService.create(req, file, authentication.getName()));
     }
 
     @GetMapping("{id}")
