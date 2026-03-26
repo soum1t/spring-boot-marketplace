@@ -18,6 +18,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.util.Arrays;
@@ -66,7 +67,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, AuthenticationManager authenticationManager) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, AuthenticationManager authenticationManager, AuthenticationSuccessHandler authenticationSuccessHandler) throws Exception {
 
         JWTFilter jwtFilter = new JWTFilter(authenticationManager);
 
@@ -78,12 +79,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .oauth2Login(oauth2 -> oauth2
-                        .successHandler(
-                                (req, res, auth) -> {
-                                    OidcUser oidcUser = (OidcUser) auth.getPrincipal();
-                                    assert oidcUser != null;
-                                    log.info("Oauth2 login successfull, name: {}, email: {}", oidcUser.getClaims().get("name"), oidcUser.getClaims().get("email"));
-                                })
+                        .successHandler(authenticationSuccessHandler)
                         .failureHandler(
                                 (req, res, exp) -> {
                                     log.error("OAuth2 login failed: {}", exp.getMessage());

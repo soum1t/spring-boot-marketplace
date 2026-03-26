@@ -7,6 +7,8 @@ import com.example.backend.dtos.response.RegisterUserResponse;
 import com.example.backend.entities.User;
 import com.example.backend.repositories.UserRepository;
 import com.example.backend.utils.JWTUtil;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -42,7 +44,7 @@ public class UserService {
                 .password(passwordEncoder.encode(registerUser.getPassword()))
                 .build();
 
-        userRepository.saveAndFlush(user);
+        userRepository.save(user);
 
         return RegisterUserResponse.builder()
                 .name(user.getName())
@@ -51,7 +53,7 @@ public class UserService {
                 .build();
     }
 
-    public LoginUserResponse login(LoginUserRequest loginRequest) {
+    public LoginUserResponse login(LoginUserRequest loginRequest, HttpServletResponse resp) {
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                 loginRequest.getEmail(),
                 loginRequest.getPassword()
@@ -60,8 +62,17 @@ public class UserService {
         Authentication authentication1 = authenticationManager.authenticate(authentication);
 
         if (!authentication1.isAuthenticated()) throw new BadCredentialsException("Invalid email or password.");
+
+        Cookie cookie = new Cookie("token", jwtUtil.generateToken(authentication1.getName()));
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
+        cookie.setPath("/");
+        cookie.setMaxAge(7 * 24 * 60 * 60);
+
+        resp.addCookie(cookie);
+
         LoginUserResponse loginUserResponse = new LoginUserResponse();
-        loginUserResponse.setToken(jwtUtil.generateToken(authentication1.getName()));
+        loginUserResponse.setMessage("Login successful.");
         return loginUserResponse;
     }
 

@@ -9,7 +9,7 @@ import java.io.Serializable;
 @Data
 public class WishlistId implements Serializable {
 
-    private String userId;
-    private String productId;
+    private Long userId;
+    private Long productId;
 
 }

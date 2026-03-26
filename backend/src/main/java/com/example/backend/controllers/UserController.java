@@ -5,6 +5,9 @@ import com.example.backend.dtos.request.RegisterUserRequest;
 import com.example.backend.dtos.response.LoginUserResponse;
 import com.example.backend.dtos.response.RegisterUserResponse;
 import com.example.backend.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -24,8 +27,8 @@ public class UserController {
     }
 
     @PostMapping("login")
-    public ResponseEntity<LoginUserResponse> loginUser(@RequestBody @Valid LoginUserRequest loginRequest) {
-        return ResponseEntity.ok(userService.login(loginRequest));
+    public ResponseEntity<LoginUserResponse> loginUser(@RequestBody @Valid LoginUserRequest loginRequest, HttpServletResponse resp) {
+        return ResponseEntity.ok(userService.login(loginRequest, resp));
     }
 
 }
