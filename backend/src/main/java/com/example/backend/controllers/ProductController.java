@@ -13,6 +13,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.Set;
 
 @RestController
@@ -39,9 +40,8 @@ public class ProductController {
     }
 
     @GetMapping("all")
-    public ResponseEntity<Set<Product>> getAllProducts() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return ResponseEntity.ok(productService.getProducts(authentication.getName()));
+    public ResponseEntity<List<Product>> getAllProducts() {
+        return ResponseEntity.ok(productService.getProducts());
     }
 
 }

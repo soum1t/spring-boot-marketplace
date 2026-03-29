@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { createContext, useEffect, useState } from "react";
 
-type UserProfile = {
+export type UserProfile = {
   name: string;
   email: string;
 };

@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -64,9 +65,8 @@ public class ProductService {
                 .build();
     }
 
-    public Set<Product> getProducts(String email) {
-        Optional<User> byEmail = userRepository.findByEmail(email);
-        return byEmail.map(User::getProducts).orElseThrow(() -> new RuntimeException("User not found"));
+    public List<Product> getProducts() {
+        return productRepository.findAll();
     }
 
     public Product getProductById(Long id, String email) {
