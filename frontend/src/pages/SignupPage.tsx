@@ -64,7 +64,7 @@ export default function SignupPage() {
           </CardHeader>
 
           <form onSubmit={handleSubmit}>
-            <CardContent className="grid gap-4">
+            <CardContent className="grid gap-4 mb-4">
               {/* Name */}
               <div className="grid gap-2">
                 <Label htmlFor="signup-name">Full Name</Label>
